@@ -3,10 +3,13 @@ package com.apipassenger.service;
 import com.apipassenger.remote.ServicePassengerUserClient;
 import com.apipassenger.remote.ServiceVerificationCodeClient;
 import com.wish.internal.common.constant.CommonStatusEnum;
+import com.wish.internal.common.constant.IdentityConstant;
 import com.wish.internal.common.dto.ResponseResult;
+import com.wish.internal.common.dto.TokenResult;
 import com.wish.internal.common.request.VerificationDTO;
 import com.wish.internal.common.response.NumberCodeResponse;
 import com.wish.internal.common.response.TokenResponse;
+import com.wish.internal.common.utils.JwtUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +75,12 @@ public class VerificationService {
         //判断原来是否有用户，并进行相应的处理
         passengerUserClient.loginOrRegister(verificationDTO);
         //颁发令牌
+        TokenResult tokenResult = new TokenResult();
+        tokenResult.setPhone(passengerPhone);
+        tokenResult.setIdentity(IdentityConstant.PASSENGER_IDENTITY);
+        String token = JwtUtils.generatorToken(tokenResult);
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken("token value");
+        tokenResponse.setToken(token);
         return ResponseResult.success(tokenResponse);
     }
 

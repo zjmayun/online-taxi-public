@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.wish.internal.common.dto.TokenResult;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,12 +17,16 @@ public class JwtUtils {
     //盐
     private static final String SIGN = "abcd3##,!@J";
 
-    private static final String JWT_KEY = "passengerPhone";
+    private static final String JWT_KEY_PHONE = "phone";
+
+    //乘客0，司机1
+    private static final String JWT_KEY_IDENTITY = "identity";
 
     //生成token
-    public static String generatorToken(String passengerPhone) {
+    public static String generatorToken(TokenResult tokenResult) {
         Map<String, String> map = new HashMap<>();
-        map.put(JWT_KEY, passengerPhone);
+        map.put(JWT_KEY_PHONE, tokenResult.getPhone());
+        map.put(JWT_KEY_IDENTITY, tokenResult.getIdentity());
         //token过期时间
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 1);
@@ -44,17 +49,27 @@ public class JwtUtils {
     }
 
     //解析token
-    public static String parseJwt(String token) {
+    public static TokenResult parseJwt(String token) {
         DecodedJWT verify = JWT.require(Algorithm.HMAC256(SIGN)).build().verify(token);
-        Claim claim = verify.getClaim(JWT_KEY);
-        return claim.toString();
+        String phone = verify.getClaim(JWT_KEY_PHONE).toString();
+        String identity = verify.getClaim(JWT_KEY_IDENTITY).toString();
+        TokenResult tokenResult = new TokenResult();
+        tokenResult.setPhone(phone);
+        tokenResult.setIdentity(identity);
+        return tokenResult;
     }
 
     public static void main(String[] args) {
         Map<String, String> map = new HashMap<>();
-        String token = generatorToken("13018767611");
-        System.out.println(token);
-        System.out.println(parseJwt(token));
+        TokenResult tokenResult = new TokenResult();
+        tokenResult.setPhone("13016157661");
+        tokenResult.setIdentity("1");
+        String token = generatorToken(tokenResult);
+        System.out.println("token=" + token);
+
+        TokenResult tokenResult1 = new TokenResult();
+        tokenResult1 = parseJwt(token);
+        System.out.println(tokenResult1.getPhone() + "," + tokenResult1.getIdentity());
     }
 
 }
