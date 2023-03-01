@@ -1,10 +1,12 @@
 package com.apipassenger.service;
 
 import com.apipassenger.remote.ServiceVerificationCodeClient;
+import com.wish.internal.common.constant.CommonStatusEnum;
 import com.wish.internal.common.dto.ResponseResult;
 import com.wish.internal.common.response.NumberCodeResponse;
 import com.wish.internal.common.response.TokenResponse;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class VerificationService {
         //存入redis中
         System.out.println("存入redis中");
         //key value 过期时间
-        String key = verificationCodePrefix + passengerPhone;
+        String key = generatorKeyByPhone(passengerPhone);
         redisTemplate.opsForValue().set(key, code + "", 2, TimeUnit.MINUTES);
         return code;
     }
@@ -44,11 +46,21 @@ public class VerificationService {
      * @return
      */
     public ResponseResult checkVerificationCode(String passengerPhone, String verificationCode) {
-        //根据手机号查对应的验证码
-        System.out.println("根据手机号查对应的验证码");
+        //生成key
+        String key = generatorKeyByPhone(passengerPhone);
 
-        //进行验证码的比对
-        System.out.println("进行验证码的比对");
+        //根据手机号去redis中查对应的验证码
+        System.out.println("根据手机号查对应的验证码");
+        String codeRedis = redisTemplate.opsForValue().get(key);
+        System.out.println("查出来的value为:" + codeRedis);
+
+        //校验验证码
+        if(StringUtils.isBlank(codeRedis)) {
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
+        }
+        if(!verificationCode.trim().equals(codeRedis)) {
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
+        }
 
         //判断原来是否有用户，并进行相应的处理
 
@@ -56,6 +68,15 @@ public class VerificationService {
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken("token value");
         return ResponseResult.success(tokenResponse);
+    }
+
+    /**
+     * 根据passengerPhone生成key
+     * @param passengerPhone
+     * @return
+     */
+    private String generatorKeyByPhone(String passengerPhone) {
+        return verificationCodePrefix + passengerPhone;
     }
 
 

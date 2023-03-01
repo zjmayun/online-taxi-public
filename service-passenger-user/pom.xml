@@ -10,11 +10,10 @@
     </parent>
 
     <groupId>com.wish</groupId>
-    <artifactId>service-verificationcode</artifactId>
+    <artifactId>service-passenger-user</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>service-verificationcode</name>
-    <description>service-verificationcode</description>
-
+    <name>service-passenger-user</name>
+    <description>service-passenger-user</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -28,11 +27,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.4.3.1</version>
+        </dependency>
     </dependencies>
 
     <build>

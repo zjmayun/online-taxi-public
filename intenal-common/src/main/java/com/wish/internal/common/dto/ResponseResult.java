@@ -23,6 +23,11 @@ public class ResponseResult<T> {
                 .setMessage(CommonStatusEnum.SUCCESS.getValue()).setData(data);
     }
 
+    public static <T> ResponseResult success() {
+        return new ResponseResult().setCode(CommonStatusEnum.SUCCESS.getCode())
+                .setMessage(CommonStatusEnum.SUCCESS.getValue());
+    }
+
     /**
      * 失败返回的方法
      * @param code 错误码

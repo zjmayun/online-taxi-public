@@ -1,4 +1,4 @@
-package com.apipassenger.request;
+package com.wish.internal.common.request;
 
 import lombok.Data;
 
