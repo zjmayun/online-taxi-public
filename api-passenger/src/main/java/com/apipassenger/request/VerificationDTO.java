@@ -1,14 +1,12 @@
 package com.apipassenger.request;
 
+import lombok.Data;
+
+@Data
 public class VerificationDTO {
 
     private String passengerPhone;
 
-    public String getPassengerPhone() {
-        return passengerPhone;
-    }
+    private String verificationCode;
 
-    public void setPassengerPhone(String passengerPhone) {
-        this.passengerPhone = passengerPhone;
-    }
 }
