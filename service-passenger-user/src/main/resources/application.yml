@@ -7,3 +7,5 @@ spring:
     url: jdbc:mysql://localhost:3307/service-passenger-user?characterEncoding=utf-8&serverTimezone=GMT%2B8
     username: root
     password: root
+  application:
+    name: service-passenger-user

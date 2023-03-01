@@ -1,8 +1,10 @@
 package com.apipassenger.service;
 
+import com.apipassenger.remote.ServicePassengerUserClient;
 import com.apipassenger.remote.ServiceVerificationCodeClient;
 import com.wish.internal.common.constant.CommonStatusEnum;
 import com.wish.internal.common.dto.ResponseResult;
+import com.wish.internal.common.request.VerificationDTO;
 import com.wish.internal.common.response.NumberCodeResponse;
 import com.wish.internal.common.response.TokenResponse;
 import net.sf.json.JSONObject;
@@ -18,6 +20,9 @@ public class VerificationService {
 
     @Autowired
     private ServiceVerificationCodeClient verificationCodeClient;
+
+    @Autowired
+    private ServicePassengerUserClient passengerUserClient;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -62,8 +67,10 @@ public class VerificationService {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
 
+        VerificationDTO verificationDTO = new VerificationDTO();
+        verificationDTO.setPassengerPhone(passengerPhone);
         //判断原来是否有用户，并进行相应的处理
-
+        passengerUserClient.loginOrRegister(verificationDTO);
         //颁发令牌
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken("token value");
