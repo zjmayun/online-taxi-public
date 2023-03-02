@@ -22,12 +22,15 @@ public class JwtUtils {
     //乘客0，司机1
     private static final String JWT_KEY_IDENTITY = "identity";
 
+    //token type
+    private static final String JWT_TOKEN_TYPE = "tokenType";
+
     //生成token
     public static String generatorToken(TokenResult tokenResult) {
         Map<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, tokenResult.getPhone());
         map.put(JWT_KEY_IDENTITY, tokenResult.getIdentity());
-
+        map.put(JWT_TOKEN_TYPE, tokenResult.getTokenType());
         //整合map
         JWTCreator.Builder build = JWT.create();
         map.forEach(

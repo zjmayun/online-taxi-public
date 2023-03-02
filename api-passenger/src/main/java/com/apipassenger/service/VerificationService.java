@@ -4,6 +4,7 @@ import com.apipassenger.remote.ServicePassengerUserClient;
 import com.apipassenger.remote.ServiceVerificationCodeClient;
 import com.wish.internal.common.constant.CommonStatusEnum;
 import com.wish.internal.common.constant.IdentityConstant;
+import com.wish.internal.common.constant.TokenConstant;
 import com.wish.internal.common.dto.ResponseResult;
 import com.wish.internal.common.dto.TokenResult;
 import com.wish.internal.common.request.VerificationDTO;
@@ -77,16 +78,23 @@ public class VerificationService {
         TokenResult tokenResult = new TokenResult();
         tokenResult.setPhone(passengerPhone);
         tokenResult.setIdentity(IdentityConstant.PASSENGER_IDENTITY);
+        tokenResult.setTokenType(TokenConstant.ACCESS_TOKEN_TYPE);
         //生成token
-        String token = JwtUtils.generatorToken(tokenResult);
+        String accessToken = JwtUtils.generatorToken(tokenResult);
 
-        //生成token的key
-        String tokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        tokenResult.setTokenType(TokenConstant.REFRESH_TOKEN_TYPE);
+        String refreshToken = JwtUtils.generatorToken(tokenResult);
+        //生成accessToken前缀以及refreshToken前缀
+        String accessTokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.ACCESS_TOKEN_TYPE);
+        String refreshTokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.REFRESH_TOKEN_TYPE);
 
-        //token存入redis中
-        redisTemplate.opsForValue().set(tokenKey, token, 30, TimeUnit.DAYS);
+        //accessToken以及refreshToken存入redis中
+        redisTemplate.opsForValue().set(accessTokenKey, accessToken, 30, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(refreshTokenKey, refreshToken, 31, TimeUnit.DAYS);
+
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken(token);
+        tokenResponse.setAccessToken(accessToken);
+        tokenResponse.setRefreshToken(refreshToken);
         return ResponseResult.success(tokenResponse);
     }
 

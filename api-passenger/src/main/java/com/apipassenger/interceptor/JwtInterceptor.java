@@ -1,6 +1,7 @@
 package com.apipassenger.interceptor;
 
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.wish.internal.common.constant.TokenConstant;
 import com.wish.internal.common.dto.ResponseResult;
 import com.wish.internal.common.dto.TokenResult;
 import com.wish.internal.common.utils.JwtUtils;
@@ -43,7 +44,8 @@ public class JwtInterceptor implements HandlerInterceptor {
            //前端传入的token，生成key
            String phone = tokenResult.getPhone();
            String identity = tokenResult.getIdentity();
-           String tokenPrefix = RedisPrefixUtils.generatorToken(phone, identity);
+           String tokenPrefix = RedisPrefixUtils.generatorToken(phone, identity, TokenConstant.ACCESS_TOKEN_TYPE);
+//           String refreshTokenPrefix = RedisPrefixUtils.generatorToken(phone, identity, TokenConstant.REFRESH_TOKEN_TYPE);
            String redisToken = redisTemplate.opsForValue().get(tokenPrefix);
            //校验前端传入的token与redis中的token
            if(StringUtils.isBlank(redisToken)) {
