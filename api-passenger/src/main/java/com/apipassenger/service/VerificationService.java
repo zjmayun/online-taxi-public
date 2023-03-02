@@ -10,6 +10,7 @@ import com.wish.internal.common.request.VerificationDTO;
 import com.wish.internal.common.response.NumberCodeResponse;
 import com.wish.internal.common.response.TokenResponse;
 import com.wish.internal.common.utils.JwtUtils;
+import com.wish.internal.common.utils.RedisPrefixUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,6 @@ public class VerificationService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    private String verificationCodePrefix = "passenger-verification-code-";
-
-    private String tokenPrefix = "token-";
-
     public int generatorCode(String passengerPhone) {
         System.out.println("调用验证码服务，获取验证码");
         ResponseResult<NumberCodeResponse> responseResult = verificationCodeClient.numberCode(5);
@@ -44,7 +41,7 @@ public class VerificationService {
         //存入redis中
         System.out.println("存入redis中");
         //key value 过期时间
-        String key = generatorKeyByPhone(passengerPhone);
+        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone);
         redisTemplate.opsForValue().set(key, code + "", 2, TimeUnit.MINUTES);
         return code;
     }
@@ -57,7 +54,7 @@ public class VerificationService {
      */
     public ResponseResult checkVerificationCode(String passengerPhone, String verificationCode) {
         //生成key
-        String key = generatorKeyByPhone(passengerPhone);
+        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone);
 
         //根据手机号去redis中查对应的验证码
         System.out.println("根据手机号查对应的验证码");
@@ -84,26 +81,13 @@ public class VerificationService {
         String token = JwtUtils.generatorToken(tokenResult);
 
         //生成token的key
-        String tokenKey = generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        String tokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
 
         //token存入redis中
         redisTemplate.opsForValue().set(tokenKey, token, 30, TimeUnit.DAYS);
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(token);
         return ResponseResult.success(tokenResponse);
-    }
-
-    /**
-     * 根据passengerPhone生成key
-     * @param passengerPhone
-     * @return
-     */
-    private String generatorKeyByPhone(String passengerPhone) {
-        return verificationCodePrefix + passengerPhone;
-    }
-
-    private String generatorToken(String phone, String identity) {
-        return tokenPrefix + phone + "-" + identity;
     }
 
 }

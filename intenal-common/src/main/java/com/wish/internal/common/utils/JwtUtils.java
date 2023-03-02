@@ -27,10 +27,6 @@ public class JwtUtils {
         Map<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, tokenResult.getPhone());
         map.put(JWT_KEY_IDENTITY, tokenResult.getIdentity());
-        //token过期时间
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.add(Calendar.DATE, 1);
-//        Date date = calendar.getTime();
 
         //整合map
         JWTCreator.Builder build = JWT.create();
@@ -40,9 +36,6 @@ public class JwtUtils {
                 }
         );
 
-        //整合过期时间
-//        build.withExpiresAt(date);
-
         //整合token
         String sign = build.sign(Algorithm.HMAC256(SIGN));
         return sign;
@@ -51,8 +44,8 @@ public class JwtUtils {
     //解析token
     public static TokenResult parseJwt(String token) {
         DecodedJWT verify = JWT.require(Algorithm.HMAC256(SIGN)).build().verify(token);
-        String phone = verify.getClaim(JWT_KEY_PHONE).toString();
-        String identity = verify.getClaim(JWT_KEY_IDENTITY).toString();
+        String phone = verify.getClaim(JWT_KEY_PHONE).asString();
+        String identity = verify.getClaim(JWT_KEY_IDENTITY).asString();
         TokenResult tokenResult = new TokenResult();
         tokenResult.setPhone(phone);
         tokenResult.setIdentity(identity);
