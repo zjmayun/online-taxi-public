@@ -27,16 +27,7 @@ public class JwtInterceptor implements HandlerInterceptor {
        String resultString = "";
        //获取token
        String token = request.getHeader("Authorization");
-       TokenResult tokenResult = new TokenResult();
-       try {
-           tokenResult = JwtUtils.parseJwt(token);
-       } catch (SignatureVerificationException e){
-           resultString = "token sign error";
-           result = false;
-       } catch (Exception e) {
-           resultString = "token invalid";
-           result = false;
-       }
+       TokenResult tokenResult = JwtUtils.checkToken(token);
        if(tokenResult == null) {
            resultString = "token invalid";
            result = false;
@@ -44,14 +35,10 @@ public class JwtInterceptor implements HandlerInterceptor {
            //前端传入的token，生成key
            String phone = tokenResult.getPhone();
            String identity = tokenResult.getIdentity();
-           String tokenPrefix = RedisPrefixUtils.generatorToken(phone, identity, TokenConstant.ACCESS_TOKEN_TYPE);
-//           String refreshTokenPrefix = RedisPrefixUtils.generatorToken(phone, identity, TokenConstant.REFRESH_TOKEN_TYPE);
+           String tokenPrefix = RedisPrefixUtils.generatorTokenKey(phone, identity, TokenConstant.ACCESS_TOKEN_TYPE);
            String redisToken = redisTemplate.opsForValue().get(tokenPrefix);
            //校验前端传入的token与redis中的token
-           if(StringUtils.isBlank(redisToken)) {
-               resultString = "token invalid";
-               result = false;
-           } else if(!token.trim().equals(redisToken.trim())) {
+           if(StringUtils.isBlank(redisToken) || !token.trim().equals(redisToken.trim())) {
                resultString = "token invalid";
                result = false;
            }
@@ -61,7 +48,6 @@ public class JwtInterceptor implements HandlerInterceptor {
            PrintWriter printWriter = response.getWriter();
            printWriter.print(JSONObject.fromObject(ResponseResult.fail(resultString)));
        }
-
         return result;
     }
 }

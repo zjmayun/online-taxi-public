@@ -3,6 +3,7 @@ package com.wish.internal.common.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.wish.internal.common.dto.TokenResult;
@@ -25,12 +26,18 @@ public class JwtUtils {
     //token type
     private static final String JWT_TOKEN_TYPE = "tokenType";
 
+    private static final String JWT_TOKEN_TIME = "tokenTime";
+
     //生成token
     public static String generatorToken(TokenResult tokenResult) {
         Map<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, tokenResult.getPhone());
         map.put(JWT_KEY_IDENTITY, tokenResult.getIdentity());
         map.put(JWT_TOKEN_TYPE, tokenResult.getTokenType());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        Date date = calendar.getTime();
+        map.put(JWT_TOKEN_TIME, date.toString());
         //整合map
         JWTCreator.Builder build = JWT.create();
         map.forEach(
@@ -49,9 +56,20 @@ public class JwtUtils {
         DecodedJWT verify = JWT.require(Algorithm.HMAC256(SIGN)).build().verify(token);
         String phone = verify.getClaim(JWT_KEY_PHONE).asString();
         String identity = verify.getClaim(JWT_KEY_IDENTITY).asString();
+        String tokenType = verify.getClaim(JWT_TOKEN_TYPE).asString();
         TokenResult tokenResult = new TokenResult();
         tokenResult.setPhone(phone);
         tokenResult.setIdentity(identity);
+        return tokenResult;
+    }
+
+    //校验token
+    public static TokenResult checkToken(String token) {
+        TokenResult tokenResult = null;
+        try{
+            tokenResult = JwtUtils.parseJwt(token);
+        } catch (Exception e){
+        }
         return tokenResult;
     }
 

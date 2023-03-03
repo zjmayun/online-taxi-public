@@ -85,8 +85,8 @@ public class VerificationService {
         tokenResult.setTokenType(TokenConstant.REFRESH_TOKEN_TYPE);
         String refreshToken = JwtUtils.generatorToken(tokenResult);
         //生成accessToken前缀以及refreshToken前缀
-        String accessTokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.ACCESS_TOKEN_TYPE);
-        String refreshTokenKey = RedisPrefixUtils.generatorToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.REFRESH_TOKEN_TYPE);
+        String accessTokenKey = RedisPrefixUtils.generatorTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.ACCESS_TOKEN_TYPE);
+        String refreshTokenKey = RedisPrefixUtils.generatorTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstant.REFRESH_TOKEN_TYPE);
 
         //accessToken以及refreshToken存入redis中
         redisTemplate.opsForValue().set(accessTokenKey, accessToken, 30, TimeUnit.DAYS);
