@@ -1,8 +1,7 @@
 package com.wish.servicepassengeruser.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wish.servicepassengeruser.dto.PassengerUser;
-import org.mybatis.spring.annotation.MapperScan;
+import com.wish.internal.common.dto.PassengerUser;
 import org.springframework.stereotype.Repository;
 
 @Repository

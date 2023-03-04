@@ -1,4 +1,4 @@
-package com.wish.servicepassengeruser.dto;
+package com.wish.internal.common.dto;
 
 import lombok.Data;
 
@@ -20,5 +20,7 @@ public class PassengerUser {
     private byte passengerGender;
 
     private byte state;
+
+    private String profilePhoto;
 
 }
