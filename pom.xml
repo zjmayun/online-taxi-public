@@ -16,6 +16,7 @@
     <modules>
         <module>api-passenger</module>
         <module>intenal-common</module>
+        <module>service-price</module>
     </modules>
     <packaging>pom</packaging>
 
