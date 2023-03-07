@@ -1,11 +1,17 @@
 package com.apipassenger.service;
 
+import com.apipassenger.remote.ServicePriceClient;
 import com.wish.internal.common.dto.ResponseResult;
+import com.wish.internal.common.request.ForecastPriceDTO;
 import com.wish.internal.common.response.ForecastPriceResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ForecastService {
+
+    @Autowired
+    private ServicePriceClient servicePriceClient;
 
     /**
      *
@@ -16,8 +22,13 @@ public class ForecastService {
      * @return
      */
     public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
-
-        ForecastPriceResponse priceResponse = new ForecastPriceResponse();
+        ForecastPriceDTO forecastPriceDTO = new ForecastPriceDTO();
+        forecastPriceDTO.setDepLongitude(depLongitude);
+        forecastPriceDTO.setDepLatitude(depLatitude);
+        forecastPriceDTO.setDestLongitude(destLongitude);
+        forecastPriceDTO.setDestLatitude(depLatitude);
+        ResponseResult<ForecastPriceResponse> responseResult = servicePriceClient.forecastPrice(forecastPriceDTO);
+        ForecastPriceResponse priceResponse = responseResult.getData();
         return ResponseResult.success(priceResponse);
     }
 

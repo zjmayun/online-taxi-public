@@ -20,6 +20,11 @@ public enum CommonStatusEnum {
     USER_NOT_EXISTS(1200, "user not exits"),
 
     /**
+     * 计价错误,1300-1399
+     */
+    PRICE_RULE_NOT_EXISTS(1300, "price rule not exists"),
+
+    /**
      * 成功
      */
     SUCCESS(1, "success"),
